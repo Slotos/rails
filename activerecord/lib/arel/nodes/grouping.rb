@@ -6,6 +6,10 @@ module Arel # :nodoc: all
       def fetch_attribute(&block)
         expr.fetch_attribute(&block)
       end
+
+      def impossible?
+        NodeExpression === @expr && @expr.impossible?
+      end
     end
   end
 end

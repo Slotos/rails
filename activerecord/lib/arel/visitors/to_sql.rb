@@ -86,6 +86,14 @@ module Arel # :nodoc: all
         end
         alias :visit_Arel_Nodes_Quoted :visit_Arel_Nodes_Casted
 
+        def visit_Arel_Nodes_Tautology(o, collector)
+          collector << "1=1"
+        end
+
+        def visit_Arel_Nodes_Impossibility(o, collector)
+          collector << "1=0"
+        end
+
         def visit_Arel_Nodes_True(o, collector)
           collector << "TRUE"
         end
@@ -433,9 +441,9 @@ module Arel # :nodoc: all
         def visit_Arel_Nodes_GreaterThanOrEqual(o, collector)
           case unboundable?(o.right)
           when 1
-            return collector << "1=0"
+            return visit_Arel_Nodes_Impossibility(o, collector)
           when -1
-            return collector << "1=1"
+            return visit_Arel_Nodes_Tautology(o, collector)
           end
           collector = visit o.left, collector
           collector << " >= "
@@ -445,9 +453,9 @@ module Arel # :nodoc: all
         def visit_Arel_Nodes_GreaterThan(o, collector)
           case unboundable?(o.right)
           when 1
-            return collector << "1=0"
+            return visit_Arel_Nodes_Impossibility(o, collector)
           when -1
-            return collector << "1=1"
+            return visit_Arel_Nodes_Tautology(o, collector)
           end
           collector = visit o.left, collector
           collector << " > "
@@ -457,9 +465,9 @@ module Arel # :nodoc: all
         def visit_Arel_Nodes_LessThanOrEqual(o, collector)
           case unboundable?(o.right)
           when 1
-            return collector << "1=1"
+            return visit_Arel_Nodes_Tautology(o, collector)
           when -1
-            return collector << "1=0"
+            return visit_Arel_Nodes_Impossibility(o, collector)
           end
           collector = visit o.left, collector
           collector << " <= "
@@ -469,9 +477,9 @@ module Arel # :nodoc: all
         def visit_Arel_Nodes_LessThan(o, collector)
           case unboundable?(o.right)
           when 1
-            return collector << "1=1"
+            return visit_Arel_Nodes_Tautology(o, collector)
           when -1
-            return collector << "1=0"
+            return visit_Arel_Nodes_Impossibility(o, collector)
           end
           collector = visit o.left, collector
           collector << " < "
@@ -590,7 +598,7 @@ module Arel # :nodoc: all
               values.delete_if { |value| unboundable?(value) }
             end
 
-            return collector << "1=0" if values.empty?
+            return visit_Arel_Nodes_Impossibility(o, collector) if values.empty?
           end
 
           visit(attr, collector) << " IN ("
@@ -606,7 +614,7 @@ module Arel # :nodoc: all
               values.delete_if { |value| unboundable?(value) }
             end
 
-            return collector << "1=1" if values.empty?
+            return visit_Arel_Nodes_Tautology(o, collector) if values.empty?
           end
 
           visit(attr, collector) << " NOT IN ("
@@ -648,7 +656,7 @@ module Arel # :nodoc: all
         def visit_Arel_Nodes_Equality(o, collector)
           right = o.right
 
-          return collector << "1=0" if unboundable?(right)
+          return visit_Arel_Nodes_Impossibility(o, collector) if o.impossible?
 
           collector = visit o.left, collector
 
@@ -683,7 +691,7 @@ module Arel # :nodoc: all
         def visit_Arel_Nodes_NotEqual(o, collector)
           right = o.right
 
-          return collector << "1=1" if unboundable?(right)
+          return visit_Arel_Nodes_Tautology(o, collector) if o.tautological?
 
           collector = visit o.left, collector
 

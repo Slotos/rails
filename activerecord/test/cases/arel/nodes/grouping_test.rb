@@ -21,6 +21,11 @@ module Arel
           assert_equal 2, array.uniq.size
         end
       end
+
+      it "is impossible if wrapped node is impossible" do
+        assert_not_predicate Grouping.new("foo"), :impossible?
+        assert_predicate Grouping.new(Impossibility.new), :impossible?
+      end
     end
   end
 end

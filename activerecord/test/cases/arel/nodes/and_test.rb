@@ -4,7 +4,7 @@ require_relative "../helper"
 
 module Arel
   module Nodes
-    describe "And" do
+    class AndTest < Arel::Spec
       describe "equality" do
         it "is equal with equal ivars" do
           array = [And.new(["foo", "bar"]), And.new(["foo", "bar"])]
@@ -23,6 +23,14 @@ module Arel
 
           assert_kind_of As, aliased
           assert_kind_of SqlLiteral, aliased.right
+        end
+      end
+
+      describe "detects trivial impossibility" do
+        it "impossible if any component is impossible" do
+          assert_not_predicate And.new(["foo", "bar"]), :impossible?
+          assert_predicate And.new(["foo", "bar", Impossibility.new]), :impossible?
+          assert_predicate And.new(["foo", "bar", In.new(Arel.sql("b"), [])]), :impossible?
         end
       end
     end

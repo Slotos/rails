@@ -2,7 +2,7 @@
 
 module Arel # :nodoc: all
   module Nodes
-    class False < Arel::Nodes::NodeExpression
+    class Tautology < Arel::Nodes::NodeExpression
       def hash
         self.class.hash
       end
@@ -11,8 +11,6 @@ module Arel # :nodoc: all
         self.class == other.class
       end
       alias :== :eql?
-
-      def impossible?; true; end
     end
   end
 end

@@ -10,6 +10,10 @@ module Arel # :nodoc: all
       def invert
         Arel::Nodes::NotIn.new(left, right)
       end
+
+      def impossible?
+        Array === right && right.empty?
+      end
     end
   end
 end

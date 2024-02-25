@@ -41,5 +41,6 @@ module Arel
     alias :assert_no_match :refute_match
     alias :assert_not_equal :refute_equal
     alias :assert_not_same :refute_same
+    alias :assert_not_predicate :refute_predicate
   end
 end

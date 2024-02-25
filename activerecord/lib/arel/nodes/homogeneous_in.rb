@@ -24,6 +24,10 @@ module Arel # :nodoc: all
         type == :in
       end
 
+      def impossible?
+        equality? && values.empty?
+      end
+
       def invert
         Arel::Nodes::HomogeneousIn.new(values, attribute, type == :in ? :notin : :in)
       end

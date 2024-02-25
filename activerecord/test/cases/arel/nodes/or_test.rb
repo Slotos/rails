@@ -19,7 +19,9 @@ module Arel
           _(oror.expr.right).must_equal right
         end
       end
+    end
 
+    class OrTest < Arel::Spec
       describe "equality" do
         it "is equal with equal ivars" do
           array = [Or.new("foo", "bar"), Or.new("foo", "bar")]
@@ -29,6 +31,14 @@ module Arel
         it "is not equal with different ivars" do
           array = [Or.new("foo", "bar"), Or.new("foo", "baz")]
           assert_equal 2, array.uniq.size
+        end
+      end
+
+      describe "detects trivial impossibility" do
+        it "impossible if all components are impossible" do
+          assert_not_predicate Or.new("foo", Impossibility.new), :impossible?
+          assert_not_predicate Or.new("foo", In.new(Arel.sql("b"), [])), :impossible?
+          assert_predicate Or.new(Impossibility.new, In.new(Arel.sql("b"), [])), :impossible?
         end
       end
     end

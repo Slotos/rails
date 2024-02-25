@@ -1199,7 +1199,7 @@ module ActiveRecord
 
     def none! # :nodoc:
       unless @none
-        where!("1=0")
+        where!(Arel::Nodes::Grouping.new(Arel::Nodes::Impossibility.new))
         @none = true
       end
       self

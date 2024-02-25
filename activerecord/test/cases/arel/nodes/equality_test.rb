@@ -48,14 +48,40 @@ module Arel
         end
       end
 
-      it "is equal with equal ivars" do
-        array = [Equality.new("foo", "bar"), Equality.new("foo", "bar")]
-        assert_equal 1, array.uniq.size
+      class EqualityTest < Arel::Spec
+        it "is equal with equal ivars" do
+          array = [Equality.new("foo", "bar"), Equality.new("foo", "bar")]
+          assert_equal 1, array.uniq.size
+        end
+
+        it "is not equal with different ivars" do
+          array = [Equality.new("foo", "bar"), Equality.new("foo", "baz")]
+          assert_equal 2, array.uniq.size
+        end
+
+        it "is impossible if left side is unboundable" do
+          eq = Equality.new("foo", OpenStruct.new("unboundable?": true))
+
+          assert_predicate eq, :impossible?
+        end
       end
 
-      it "is not equal with different ivars" do
-        array = [Equality.new("foo", "bar"), Equality.new("foo", "baz")]
-        assert_equal 2, array.uniq.size
+      class NotEqualTest < Arel::Spec
+        it "is equal with equal ivars" do
+          array = [NotEqual.new("foo", "bar"), NotEqual.new("foo", "bar")]
+          assert_equal 1, array.uniq.size
+        end
+
+        it "is not equal with different ivars" do
+          array = [NotEqual.new("foo", "bar"), NotEqual.new("foo", "baz")]
+          assert_equal 2, array.uniq.size
+        end
+
+        it "is tautological if left side is unboundable" do
+          eq = NotEqual.new("foo", OpenStruct.new("unboundable?": true))
+
+          assert_predicate eq, :tautological?
+        end
       end
     end
   end

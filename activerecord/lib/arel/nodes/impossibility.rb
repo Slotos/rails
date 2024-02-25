@@ -2,7 +2,7 @@
 
 module Arel # :nodoc: all
   module Nodes
-    class False < Arel::Nodes::NodeExpression
+    class Impossibility < Arel::Nodes::NodeExpression
       def hash
         self.class.hash
       end

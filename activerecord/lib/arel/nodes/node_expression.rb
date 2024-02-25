@@ -8,6 +8,8 @@ module Arel # :nodoc: all
       include Arel::AliasPredication
       include Arel::OrderPredications
       include Arel::Math
+
+      def impossible?; false; end
     end
   end
 end

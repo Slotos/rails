@@ -95,14 +95,6 @@ module Arel # :nodoc: all
       end
     end
 
-    class NotEqual < Binary
-      include FetchAttribute
-
-      def invert
-        Arel::Nodes::Equality.new(left, right)
-      end
-    end
-
     class NotIn < Binary
       include FetchAttribute
 
@@ -114,6 +106,10 @@ module Arel # :nodoc: all
     class Or < Binary
       def fetch_attribute(&block)
         left.fetch_attribute(&block) && right.fetch_attribute(&block)
+      end
+
+      def impossible?
+        [left, right].all? { |node| NodeExpression === node && node.impossible? }
       end
     end
 

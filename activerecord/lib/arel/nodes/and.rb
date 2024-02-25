@@ -31,6 +31,10 @@ module Arel # :nodoc: all
           self.children == other.children
       end
       alias :== :eql?
+
+      def impossible?
+        children.any? { |child| NodeExpression === child && child.impossible? }
+      end
     end
   end
 end
