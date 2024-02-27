@@ -422,6 +422,10 @@ module ActiveRecord
 
     test "no queries on impossible condition" do
       assert_queries_count(0) do
+        Post.where(Post.arel_table.create_false).load
+      end
+
+      assert_queries_count(0) do
         Post.excluding(Post.where(id: [])).invert_where.load
       end
 

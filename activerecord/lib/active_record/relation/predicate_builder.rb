@@ -2,8 +2,6 @@
 
 module ActiveRecord
   class PredicateBuilder # :nodoc:
-    EMPTY_RELATION_QUERY = ["1=0"]
-
     require "active_record/relation/predicate_builder/array_handler"
     require "active_record/relation/predicate_builder/basic_object_handler"
     require "active_record/relation/predicate_builder/range_handler"
@@ -76,7 +74,7 @@ module ActiveRecord
 
     protected
       def expand_from_hash(attributes, &block)
-        return EMPTY_RELATION_QUERY if attributes.empty?
+        return Arel::Nodes::Impossibility.new if attributes.empty?
 
         attributes.flat_map do |key, value|
           if key.is_a?(Array)

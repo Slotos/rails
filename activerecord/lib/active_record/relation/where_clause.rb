@@ -94,12 +94,7 @@ module ActiveRecord
 
       def contradiction?
         predicates.any? do |x|
-          case x
-          when Arel::Nodes::In
-            Array === x.right && x.right.empty?
-          when Arel::Nodes::Equality
-            x.right.respond_to?(:unboundable?) && x.right.unboundable?
-          end
+          Arel::Nodes::NodeExpression === x && x.impossible?
         end
       end
 
